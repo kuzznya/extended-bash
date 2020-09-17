@@ -1,6 +1,8 @@
 #!/bin/bash
 
-# [[ -z "$IMPORT_TYPE" ]] && IMPORT_TYPE=true || return 0
+[[ -z "$IMPORT_TYPE" ]] && IMPORT_TYPE=true || return 0
+
+require core.sh
 
 NEW_INSTANCE_ID=btp/NEW_INSTANCE_ID.txt
 INSTANCES=btp/INSTANCES.txt
@@ -87,7 +89,7 @@ new() {
     echo $id
 }
 
-get() {
+propget() {
     local id=$1
     local prop=$2
     ! exists $id && instance_error "instance $id not found"
@@ -110,17 +112,3 @@ typeof() {
 }
 
 init
-
-newstruct person name surname age
-
-user=$( new person ILYA KUZNETSOV 18 )
-user2=$( new person KIRILL TEST 20 )
-
-get $user name
-get $user2 age
-
-propset $user2 surname IVANOV
-
-delete $user2
-
-typeof $user
