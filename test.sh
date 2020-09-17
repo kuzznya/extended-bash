@@ -9,6 +9,11 @@ fi
 require errors.sh
 require types.sh
 
+testfunc() {
+    local person=$1
+    echo $(propget $person name)
+}
+
 newstruct person name surname age
 
 user=$( new person ILYA KUZNETSOV 18 )
@@ -22,6 +27,9 @@ propget $user invalidprop
 propset $user2 surname IVANOV
 propget $user2 surname
 
+testfunc $user
+testfunc $user2
+
 delete $user2
 propget $user2 surname
 
@@ -34,5 +42,5 @@ car=$(new car Mercedes 250 2500)
 typeof $car
 
 propget $car speed
-propset $car name Cadillac
+propset $car name "Cadillac 123"
 propget $car name

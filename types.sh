@@ -127,7 +127,7 @@ propset() {
     cat $INSTANCE_PROPS | while read line
     do
 	if [[ $line =~ ^$id\ $prop\ .*$ ]]; then
-	    echo "$id $prop $value" >> $TEMP
+	    echo $id $prop \"$value\" >> $TEMP
 	else
 	    echo $line >> $TEMP
 	fi
