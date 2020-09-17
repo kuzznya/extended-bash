@@ -35,3 +35,13 @@ invalid_args() {
     ! [[ -z "$IMPORT_CORE" ]] && print_man
     error_exit "invalid args for command $1: $2" -9
 }
+
+type_error() {
+    print_err "Type error: $@"
+    [[ -n "$EXIT_ON_ERROR" ]] && exit -8
+}
+
+instance_error() {
+    print_err "Instance error: $@"
+    [[ -n "$EXIT_ON_ERROR" ]] && exit -7
+}
