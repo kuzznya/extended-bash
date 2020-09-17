@@ -21,6 +21,19 @@ error_exit() {
     exit "${code}"
 }
 
+# error <message> [<core>]
+# Print message to stderr
+# If EXIT_ON_ERROR defined, then exit with given code or -1
+error() {
+    local message="$1"
+    local code="${2:-1}"
+    
+    [[ -n "$message" ]] && print_err "Error: $message" || \
+	    print_err "Error"
+
+    [[ -n "$EXIT_ON_ERROR" ]] && exit "$core"
+}
+
 # missing_script <missing script name>
 # Reports that script is missing
 # Exit code -10
@@ -36,12 +49,11 @@ invalid_args() {
     error_exit "invalid args for command $1: $2" -9
 }
 
+# type_error <message>
 type_error() {
-    print_err "Type error: $@"
-    [[ -n "$EXIT_ON_ERROR" ]] && exit -8
+    error "Type error: $@" -8
 }
 
 instance_error() {
-    print_err "Instance error: $@"
-    [[ -n "$EXIT_ON_ERROR" ]] && exit -7
+    error "Instance error: $@" -7
 }
