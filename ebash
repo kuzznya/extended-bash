@@ -1,0 +1,95 @@
+#!/bin/bash
+
+if [[ -f core.sh ]] ; then
+  source core.sh
+else
+  echo "Fatal error: missing script core.sh" > /dev/strerr && exit 245
+fi
+
+require errors.sh
+
+dir=thread_data
+! dir_exists $dir && mkdir $dir
+
+init() {
+  idx=$1
+  ./ebash_thread.sh "$idx" &
+}
+
+task_file() {
+  echo "$dir/ethread-$1.task"
+}
+
+lock_file() {
+  echo "$dir/ethread-$1.lock"
+}
+
+run() {
+  command="$*"
+
+  indices=( $(ps ax | grep ebash_thread.sh | grep -v grep | awk '{print $7}') )
+  count="${#indices[@]}"
+
+  # Round-Robin
+  i=0
+  while true ; do
+    idx=${indices[$i]}
+    t_file=$(task_file "$idx")
+    l_file=$(lock_file "$idx")
+    if ! [[ -f $l_file ]] && ! [[ -f $t_file ]] ; then
+#      echo "[DEBUG] Using process $idx"
+
+      touch "$l_file"
+      # Critical section start
+
+      echo "$command" > "$t_file"
+
+      # Critical section end
+      rm -f "$l_file"
+
+      break
+    fi
+    (( i++ ))
+    [[ $i -eq $count ]] && i=0
+  done
+}
+
+wait() {
+  idx=$1
+  t_file=$(task_file "$idx")
+  l_file=$(lock_file "$idx")
+  while [[ -f $l_file ]] || [[ -f $t_file ]] ; do
+    sleep 1s
+  done
+}
+
+wait_all() {
+  for idx in $(ps ax | grep ebash_thread.sh | grep -v grep | awk '{print $7}') ; do
+    wait "$idx"
+  done
+}
+
+case $1 in
+init)
+  [[ -n $2 ]] && count=$2
+  [[ -z $count ]] && count=5
+
+  for ((i=0; i < count; i++)) ; do
+    init "$i"
+  done
+  ;;
+stop)
+  for pid in $(ps ax | grep ebash_thread.sh | grep -v grep | awk '{print $1}') ; do
+    kill $pid
+  done
+  ;;
+wait)
+  wait "$2"
+  ;;
+wait_all)
+  wait_all
+  ;;
+*)
+  run "$*"
+  ;;
+esac
