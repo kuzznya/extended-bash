@@ -5,7 +5,7 @@
 for ((i=0; i < 10; i++)) ; do
   echo "Starting $i "
   ((n=i))
-  ./ebash 'sleep 5s && echo '"$n"
+  ./ebash 'sleep 5s && echo $(date)'"$n"
 done
 
 ./ebash wait_all

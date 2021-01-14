@@ -90,6 +90,6 @@ wait_all)
   wait_all
   ;;
 *)
-  run "$*"
+  run "$*" &
   ;;
 esac
