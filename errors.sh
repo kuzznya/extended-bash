@@ -5,55 +5,69 @@
 # print_err <message>
 # Print message to stderr
 print_err() {
-    echo "$*" >> /dev/stderr
+  echo "$*" >> /dev/stderr
 }
 
 # error_exit <message> [<code>]
 # Print message to srderr & then exit with given code
 # If no code present, then -1 is returned
 error_exit() {
-    local message="$1"
-    local code="${2:-1}"
+  local message="$1"
+  local code="${2:-1}"
 
-    [[ -n "$message" ]] && print_err "Error: $message" || \
-	    print_err "Fatal error"
+  if [[ -n "$message" ]] ; then
+    print_err "Error: $message"
+  else
+	  print_err "Fatal error"
+	fi
 
-    exit "${code}"
+  exit "${code}"
 }
 
 # error <message> [<core>]
 # Print message to stderr
 # If EXIT_ON_ERROR defined, then exit with given code or -1
 error() {
-    local message="$1"
-    local code="${2:-1}"
+  local message="$1"
+  local code="${2:-1}"
     
-    [[ -n "$message" ]] && print_err "Error: $message" || \
-	    print_err "Error"
+  if [[ -n "$message" ]] ; then
+    print_err "Error: $message"
+  else
+	  print_err "Error"
+	fi
 
-    [[ -n "$EXIT_ON_ERROR" ]] && exit "$core"
+  [[ -n "$EXIT_ON_ERROR" ]] && exit "$code"
 }
 
 # missing_script <missing script name>
 # Reports that script is missing
 # Exit code -10
 missing_script() {
-    error_exit "missing script $1" -10
+  error_exit "missing script $1" -10
 }
 
 # invalid_args <command> <message>
 # Prints manual & reports that command args are invalid
 # Exit code -9
 invalid_args() {
-    ! [[ -z "$IMPORT_CORE" ]] && print_man
-    error_exit "invalid args for command $1: $2" -9
+  ! [[ -z "$IMPORT_CORE" ]] && print_man
+  error_exit "invalid args for command $1: $2" -9
+}
+
+# illegal_operation <message>
+# Reports about illegal operation
+# Exit code -8
+illegal_operation() {
+  error_exit "illegal operation: $1" -8
 }
 
 # type_error <message>
 type_error() {
-    error "Type error: $@" -8
+  error "Type error: $*" -7
 }
 
+# instance_error <message>
 instance_error() {
-    error "Instance error: $@" -7
+  error "Instance error: $*" -6
 }

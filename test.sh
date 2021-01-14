@@ -1,17 +1,17 @@
 #!/bin/bash
 
 if [[ -f core.sh ]] ; then
-    source core.sh
+  source core.sh
 else
-    echo "Fatal error: missing script core.sh" > /dev/strerr && exit -10
+  echo "Fatal error: missing script core.sh" > /dev/strerr && exit 245
 fi
 
 require errors.sh
 require types.sh
 
 testfunc() {
-    local person=$1
-    echo $(propget $person name)
+  local person=$1
+  echo "$(propget $person name)"
 }
 
 newstruct person name surname age
