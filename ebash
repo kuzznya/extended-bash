@@ -12,7 +12,7 @@ dir=thread_data
 ! dir_exists $dir && mkdir $dir
 
 init() {
-  idx=$1
+  local idx=$1
   ./ebash_thread.sh "$idx" &
 }
 
@@ -25,10 +25,10 @@ lock_file() {
 }
 
 run() {
-  command="$*"
+  local command="$*"
 
-  indices=( $(ps ax | grep ebash_thread.sh | grep -v grep | awk '{print $7}') )
-  count="${#indices[@]}"
+  local indices=( $(ps ax | grep ebash_thread.sh | grep -v grep | awk '{print $7}') )
+  local count="${#indices[@]}"
 
   # Round-Robin
   i=0
@@ -55,8 +55,10 @@ run() {
 }
 
 wait() {
-  idx=$1
+  local idx=$1
+  local t_file
   t_file=$(task_file "$idx")
+  local l_file
   l_file=$(lock_file "$idx")
   while [[ -f $l_file ]] || [[ -f $t_file ]] ; do
     sleep 1s
